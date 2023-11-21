@@ -84,7 +84,7 @@ namespace HobbyEditor.GameProject
                     template.ScreenshotPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(file)!, "screenshot.png"));
                     template.Screenshot = File.ReadAllBytes(template.ScreenshotPath);
                     template.ProjectPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(file)!, template.ProjectFile));
-                    _projectTemplates.Add( Serializer.FromFile<ProjectTemplate>(file) );
+                    _projectTemplates.Add( template );
                 }   
             }
             catch (Exception ex)
