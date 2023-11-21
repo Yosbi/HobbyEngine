@@ -1,5 +1,6 @@
 ﻿using HobbyEditor.Utils;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
@@ -41,12 +42,13 @@ namespace HobbyEditor.GameProject
             {
                 if (_projectName == value) return;
                 _projectName = value;
+                ValidateProjectPath();
                 OnPropertyChanged(nameof(ProjectName));
             }
         }
 
         private string _projectPath = $@"{Environment.GetFolderPath(
-            Environment.SpecialFolder.MyDocuments)}\HobbyEditor\Projects\NewProject";
+            Environment.SpecialFolder.MyDocuments)}\HobbyProjects\";
         public string ProjectPath
         {
             get => _projectPath;
@@ -54,15 +56,145 @@ namespace HobbyEditor.GameProject
             {
                 if (_projectPath == value) return;
                 _projectPath = value;
+                ValidateProjectPath();
                 OnPropertyChanged(nameof(ProjectPath));
             }
         }
 
+        private bool _isValidProjectPath;
+        public bool IsValidProjectPath
+        {
+            get => _isValidProjectPath;
+            set
+            {
+                if (_isValidProjectPath == value) return;
+                _isValidProjectPath = value;
+                OnPropertyChanged(nameof(IsValidProjectPath));
+            }
+        }
+        
+        private string _errorMessage;
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set
+            {
+                if (_errorMessage == value) return;
+                _errorMessage = value;
+                OnPropertyChanged(nameof(ErrorMessage));
+            }
+        }
+        
         private ObservableCollection<ProjectTemplate> _projectTemplates = new ObservableCollection<ProjectTemplate>();
         public ReadOnlyObservableCollection<ProjectTemplate> ProjectTemplates  { get; }
 
+        private bool ValidateProjectPath()
+        {
+            var path = ProjectPath;
+            if (!Path.EndsInDirectorySeparator(path))
+            {
+                path += Path.DirectorySeparatorChar;
+            }
+
+            path += ProjectName + Path.DirectorySeparatorChar;
+
+            IsValidProjectPath = false;
+
+            if (string.IsNullOrWhiteSpace(ProjectName))
+            {
+                ErrorMessage = "Type in a project name.";
+                return false;
+            }
+            else if (ProjectName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+            {
+                ErrorMessage = "Project name contains invalid characters.";
+                return false;
+            }
+            else if (string.IsNullOrWhiteSpace(ProjectPath.Trim()))
+            {
+                ErrorMessage = "Select a valid project folder.";
+            }
+            else if (ProjectPath.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
+            {
+                ErrorMessage = "Project path contains invalid characters.";
+                return false;
+            }
+            else if (Directory.Exists(path) && Directory.EnumerateFileSystemEntries(path).Any())
+            {
+                ErrorMessage = "Project already exists.";
+                return false;
+            }
+            else if (path.Length > 248)
+            {
+                ErrorMessage = "Project path is too long.";
+                return false;
+            }
+            else if (path.Length + ProjectName.Length > 260)
+            {
+                ErrorMessage = "Project name is too long.";
+                return false;
+            }   
+
+            ErrorMessage = string.Empty;
+            IsValidProjectPath = true;
+
+            return true;
+        }
+
+        public string CreateProject(ProjectTemplate template)
+        {
+            if (!ValidateProjectPath())
+            {
+                return string.Empty;
+            }
+
+            if (!Path.EndsInDirectorySeparator(ProjectPath))
+            {
+                ProjectPath += Path.DirectorySeparatorChar;
+            }
+            var fullPath = ProjectPath + ProjectName + Path.DirectorySeparatorChar;
+          
+            try
+            {
+                if (!Directory.Exists(fullPath))
+                {  
+                    Directory.CreateDirectory(fullPath); 
+                }
+
+                foreach (var folder in template.Folders)
+                {
+                    Directory.CreateDirectory(
+                        Path.GetFullPath(Path.Combine(fullPath + folder)));
+                }
+                var dirInfo = new DirectoryInfo(fullPath + @".Hobby\");
+                dirInfo.Attributes |= FileAttributes.Hidden;
+
+                File.Copy(template.IconPath, 
+                    Path.GetFullPath(Path.Combine(dirInfo.FullName, "icon.png")));
+                File.Copy(template.IconPath,
+                    Path.GetFullPath(Path.Combine(dirInfo.FullName, "screenshot.png")));
+
+                var projectXml = File.ReadAllText(template.ProjectPath);
+                projectXml = string.Format(projectXml, ProjectName, ProjectPath);
+
+                var projectPath = Path.GetFullPath(Path.Combine(fullPath, $"{ProjectName}{Project.Extension}"));
+                File.WriteAllText(projectPath, projectXml);
+
+                return fullPath;
+               
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                // TODO: log error
+
+                return string.Empty;
+            }
+        }
+
         public NewProject()
         {
+            _errorMessage = string.Empty;
             ProjectTemplates = new ReadOnlyObservableCollection<ProjectTemplate>(_projectTemplates);
             try 
             {
@@ -78,7 +210,8 @@ namespace HobbyEditor.GameProject
                     template.Screenshot = File.ReadAllBytes(template.ScreenshotPath);
                     template.ProjectPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(file)!, template.ProjectFile));
                     _projectTemplates.Add( template );
-                }   
+                }  
+                ValidateProjectPath();
             }
             catch (Exception ex)
             {
