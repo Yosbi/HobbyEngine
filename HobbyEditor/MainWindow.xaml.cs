@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using HobbyEditor.GameProject;
+using System.ComponentModel;
+using System.Windows;
 
 namespace HobbyEditor
 {
@@ -11,6 +13,13 @@ namespace HobbyEditor
         {
             InitializeComponent();
             Loaded += OnMainWindowLoaded;
+            Closing += OnMainWindowClosing;
+        }
+
+        private void OnMainWindowClosing(object? sender, CancelEventArgs e)
+        {
+            Closing -= OnMainWindowClosing;
+            Project.Current?.Unload();
         }
 
         private void OnMainWindowLoaded(object sender, RoutedEventArgs e)
@@ -23,13 +32,14 @@ namespace HobbyEditor
         {
             var projectBrowser = new GameProject.ProjectBrowserDialog();
             
-            if (projectBrowser.ShowDialog() == false)
+            if (projectBrowser.ShowDialog() == false || projectBrowser.DataContext == null)
             {
                 Application.Current.Shutdown();
             }
             else
             {
-                // TODO: Load project 
+                Project.Current?.Unload();
+                DataContext = projectBrowser.DataContext;
             }
         }
     }

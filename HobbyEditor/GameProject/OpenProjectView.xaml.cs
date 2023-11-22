@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 
 namespace HobbyEditor.GameProject
 {
@@ -10,6 +11,28 @@ namespace HobbyEditor.GameProject
         public OpenProjectView()
         {
             InitializeComponent();
+        }
+
+        private void OpenProject_Click(object sender, RoutedEventArgs e)
+        {
+            OpenSelectedProject();
+        }
+
+        private void OpenSelectedProject()
+        {
+            var project = OpenProject.Open((ProjectData)projectsListBox.SelectedItem);
+            if (project != null)
+            {
+                var window = Window.GetWindow(this);
+                window.DataContext = project;
+                window.DialogResult = true;
+                window.Close();
+                
+            }
+            else
+            {
+                MessageBox.Show("Failed to open project");
+            }
         }
     }
 }

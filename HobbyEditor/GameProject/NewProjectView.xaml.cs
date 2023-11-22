@@ -17,11 +17,19 @@ namespace HobbyEditor.GameProject
         {
             var vm = (NewProject)DataContext;
 
-            var projectPath = vm.CreateProject(templateListBox.SelectedItem as ProjectTemplate);
-            
-            var window = Window.GetWindow(this);
+            var projectPath = vm.CreateProject((ProjectTemplate)templateListBox.SelectedItem);
+   
             if (!string.IsNullOrEmpty(projectPath))
             {
+                var project = OpenProject.Open(
+                    new ProjectData()
+                    {
+                        ProjectName = vm.ProjectName,
+                        ProjectPath = projectPath
+                    }
+                );
+                var window = Window.GetWindow(this);
+                window.DataContext = project;
                 window.DialogResult = true;
                 window.Close();
             }
