@@ -171,7 +171,7 @@ namespace HobbyEditor.GameProject
 
                 File.Copy(template.IconPath, 
                     Path.GetFullPath(Path.Combine(dirInfo.FullName, "icon.png")));
-                File.Copy(template.IconPath,
+                File.Copy(template.ScreenshotPath,
                     Path.GetFullPath(Path.Combine(dirInfo.FullName, "screenshot.png")));
 
                 var projectXml = File.ReadAllText(template.ProjectPath);
