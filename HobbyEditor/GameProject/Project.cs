@@ -1,4 +1,5 @@
-﻿using HobbyEditor.Utils;
+﻿using HobbyEditor.Common;
+using HobbyEditor.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,6 +10,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 
 namespace HobbyEditor.GameProject
 {
@@ -46,16 +48,26 @@ namespace HobbyEditor.GameProject
 
         public static Project Current => (Project)Application.Current.MainWindow.DataContext;
 
+        public static UndoRedo UndoRedo { get; } = new UndoRedo();
+
+        public ICommand UndoCommand { get; private set; }
+
+        public ICommand RedoCommand { get; private set; }
+
+        public ICommand AddSceneCommand { get; private set; }
+
+        public ICommand RemoveSceneCommand { get; private set; }
+
         public Project(string name, string path)
         {
             Name = name;
             Path = path;
 
-            OnDeserialized(new StreamingContext());
+            _onDeserialized(new StreamingContext());
         }
 
         [OnDeserialized]
-        private void OnDeserialized(StreamingContext context)
+        private void _onDeserialized(StreamingContext context)
         {
             if (_scenes != null)
             {
@@ -63,6 +75,37 @@ namespace HobbyEditor.GameProject
                 OnPropertyChanged(nameof(Scenes));
             }
             ActiveScene = Scenes.FirstOrDefault(s => s.IsActive);
+
+            AddSceneCommand = new RelayCommand<object>(x =>
+            {
+                _addScene($"Scene{(_scenes.Count + 1)}");
+                var newSceneAdded = _scenes.Last();
+                var newSceneAddedIndex = _scenes.Count - 1;
+
+                UndoRedo.Add(new UndoRedoAction(
+                    $"Add {newSceneAdded.Name}",
+                    () => _removeScene(newSceneAdded),
+                    () => _scenes.Insert(newSceneAddedIndex, newSceneAdded)
+                ));
+                                      
+
+            });
+
+            RemoveSceneCommand = new RelayCommand<Scene>(x =>
+            {
+                var sceneToRemove = x;
+                var sceneToRemoveIndex = _scenes.IndexOf(sceneToRemove);
+                _removeScene(sceneToRemove);
+
+                UndoRedo.Add(new UndoRedoAction(
+                    $"Remove {sceneToRemove.Name}",
+                    () => _scenes.Insert(sceneToRemoveIndex, sceneToRemove),
+                    () => _removeScene(sceneToRemove)
+                ));
+            }, x => !x.IsActive);
+
+            UndoCommand = new RelayCommand<object>(x => UndoRedo.Undo());
+            RedoCommand = new RelayCommand<object>(x => UndoRedo.Redo());
         }
 
         public static Project Load(string file)
@@ -79,6 +122,19 @@ namespace HobbyEditor.GameProject
         public void Unload()
         {
            // TODO
+        }
+
+        private void _addScene(string sceneName)
+        {
+            Debug.Assert(!string.IsNullOrWhiteSpace(sceneName));
+            _scenes.Add(new Scene(sceneName, this));
+        }
+
+        private void _removeScene(Scene scene)
+        {
+            Debug.Assert(scene != null);
+            Debug.Assert(_scenes.Contains(scene));
+            _scenes.Remove(scene);
         }
     }
 }
