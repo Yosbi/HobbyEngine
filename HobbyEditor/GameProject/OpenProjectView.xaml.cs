@@ -11,6 +11,14 @@ namespace HobbyEditor.GameProject
         public OpenProjectView()
         {
             InitializeComponent();
+
+            Loaded += (s, e) =>
+            {
+                var item = (ListBoxItem)projectsListBox.ItemContainerGenerator
+                .ContainerFromIndex(projectsListBox.SelectedIndex);
+
+                item?.Focus();
+            };
         }
 
         private void OpenProject_Click(object sender, RoutedEventArgs e)

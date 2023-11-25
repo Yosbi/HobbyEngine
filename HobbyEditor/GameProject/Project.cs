@@ -80,5 +80,18 @@ namespace HobbyEditor.GameProject
         {
            // TODO
         }
+
+        public void AddScene(string sceneName)
+        {
+            Debug.Assert(!string.IsNullOrWhiteSpace(sceneName));
+            _scenes.Add(new Scene(sceneName, this));
+        }
+
+        public void RemoveScene(Scene scene)
+        {
+            Debug.Assert(scene != null);
+            Debug.Assert(_scenes.Contains(scene));
+            _scenes.Remove(scene);
+        }
     }
 }
