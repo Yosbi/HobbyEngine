@@ -21,12 +21,12 @@ namespace HobbyEditor.GameProject
             };
         }
 
-        private void OpenProject_Click(object sender, RoutedEventArgs e)
+        private void _openProjectButtonClick(object sender, RoutedEventArgs e)
         {
-            OpenSelectedProject();
+            _openSelectedProject();
         }
 
-        private void OpenSelectedProject()
+        private void _openSelectedProject()
         {
             var project = OpenProject.Open((ProjectData)projectsListBox.SelectedItem);
             if (project != null)

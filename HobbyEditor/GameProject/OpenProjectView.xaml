@@ -16,7 +16,7 @@
                      SelectedIndex="0">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
-                        <EventSetter Event="MouseDoubleClick" Handler="OpenProject_Click"/>
+                        <EventSetter Event="MouseDoubleClick" Handler="_openProjectButtonClick"/>
                     </Style>
                 </ListBox.ItemContainerStyle>
                 <ListBox.ItemTemplate>
@@ -38,7 +38,7 @@
         Margin="0,30,0,0">
             <Button Content="Exit" Width="100" IsCancel="True"/>
             <Button Content="Open" Width="100" IsDefault="True" Margin="30,0,0,0"
-                    Click="OpenProject_Click"/>
+                    Click="_openProjectButtonClick"/>
         </StackPanel>
     </StackPanel>
 </UserControl>

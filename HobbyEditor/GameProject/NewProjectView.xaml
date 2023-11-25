@@ -45,7 +45,7 @@
             <Button Content="Exit" Width="100" IsCancel="True"/>
             <Button Content="Create" Width="100" IsDefault="True" 
                     IsEnabled="{Binding IsValidProjectPath}" 
-                    Click="OnCreate_Button"  Margin="30,0,0,0"/>
+                    Click="_onCreateButtonClick"  Margin="30,0,0,0"/>
         </StackPanel>
         <TextBlock Text="{Binding ErrorMessage}" Margin="0,20,0,0" HorizontalAlignment="Center" />
     </StackPanel>

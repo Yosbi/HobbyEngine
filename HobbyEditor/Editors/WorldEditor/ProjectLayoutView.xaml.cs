@@ -26,7 +26,7 @@ namespace HobbyEditor.Editors
             InitializeComponent();
         }
 
-        private void OnAddScene_Click(object sender, RoutedEventArgs e)
+        private void _onAddSceneButtonClick(object sender, RoutedEventArgs e)
         {
             var vm = (Project)DataContext;
             vm.AddScene("Scene" + (vm.Scenes.Count + 1));

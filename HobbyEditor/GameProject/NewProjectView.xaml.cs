@@ -13,7 +13,7 @@ namespace HobbyEditor.GameProject
             InitializeComponent();
         }
 
-        private void OnCreate_Button(object sender, RoutedEventArgs e)
+        private void _onCreateButtonClick(object sender, RoutedEventArgs e)
         {
             var vm = (NewProject)DataContext;
 

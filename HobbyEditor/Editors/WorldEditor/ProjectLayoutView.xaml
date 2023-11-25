@@ -22,7 +22,7 @@
             Grid.Row="0" 
             HorizontalAlignment="Left" 
             Margin="20,0,0,0"
-            Click="OnAddScene_Click"/>
+            Click="_onAddSceneButtonClick"/>
         <ScrollViewer 
             Grid.Row="1" 
             HorizontalScrollBarVisibility="Auto"

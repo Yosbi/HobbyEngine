@@ -42,7 +42,7 @@ namespace HobbyEditor.GameProject
             {
                 if (_projectName == value) return;
                 _projectName = value;
-                ValidateProjectPath();
+                _validateProjectPath();
                 OnPropertyChanged(nameof(ProjectName));
             }
         }
@@ -56,7 +56,7 @@ namespace HobbyEditor.GameProject
             {
                 if (_projectPath == value) return;
                 _projectPath = value;
-                ValidateProjectPath();
+                _validateProjectPath();
                 OnPropertyChanged(nameof(ProjectPath));
             }
         }
@@ -88,7 +88,7 @@ namespace HobbyEditor.GameProject
         private ObservableCollection<ProjectTemplate> _projectTemplates = new ObservableCollection<ProjectTemplate>();
         public ReadOnlyObservableCollection<ProjectTemplate> ProjectTemplates  { get; }
 
-        private bool ValidateProjectPath()
+        private bool _validateProjectPath()
         {
             var path = ProjectPath;
             if (!Path.EndsInDirectorySeparator(path))
@@ -143,7 +143,7 @@ namespace HobbyEditor.GameProject
 
         public string CreateProject(ProjectTemplate template)
         {
-            if (!ValidateProjectPath())
+            if (!_validateProjectPath())
             {
                 return string.Empty;
             }
@@ -211,7 +211,7 @@ namespace HobbyEditor.GameProject
                     template.ProjectPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(file)!, template.ProjectFile));
                     _projectTemplates.Add( template );
                 }  
-                ValidateProjectPath();
+                _validateProjectPath();
             }
             catch (Exception ex)
             {

@@ -60,7 +60,7 @@ namespace HobbyEditor.GameProject
 
                 Projects = new ReadOnlyObservableCollection<ProjectData>(_projects);
 
-                ReadProjectData();
+                _readProjectData();
 
             }
             catch (Exception ex)
@@ -70,7 +70,7 @@ namespace HobbyEditor.GameProject
             }
         }
 
-        private static void ReadProjectData()
+        private static void _readProjectData()
         {
             if (File.Exists(_projectDataPath))
             {
@@ -92,7 +92,7 @@ namespace HobbyEditor.GameProject
 
         public static Project Open(ProjectData projectData)
         {
-            ReadProjectData();
+            _readProjectData();
             var project = _projects.FirstOrDefault(p => p.FullPath == projectData.FullPath);
        
             if (project!= null)
@@ -106,12 +106,12 @@ namespace HobbyEditor.GameProject
                 _projects.Add(project);
             }
 
-            WriteProjectData();
+            _writeProjectData();
 
             return Project.Load(project.FullPath);
         }
 
-        private static void WriteProjectData()
+        private static void _writeProjectData()
         {
             var projects = _projects.OrderByDescending(p => p.Date).ToList();
             Serializer.ToFile(new ProjectDataList() { Projects = projects }, _projectDataPath);

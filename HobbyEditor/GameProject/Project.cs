@@ -51,11 +51,11 @@ namespace HobbyEditor.GameProject
             Name = name;
             Path = path;
 
-            OnDeserialized(new StreamingContext());
+            _onDeserialized(new StreamingContext());
         }
 
         [OnDeserialized]
-        private void OnDeserialized(StreamingContext context)
+        private void _onDeserialized(StreamingContext context)
         {
             if (_scenes != null)
             {
@@ -81,13 +81,13 @@ namespace HobbyEditor.GameProject
            // TODO
         }
 
-        public void AddScene(string sceneName)
+        private void _addScene(string sceneName)
         {
             Debug.Assert(!string.IsNullOrWhiteSpace(sceneName));
             _scenes.Add(new Scene(sceneName, this));
         }
 
-        public void RemoveScene(Scene scene)
+        private void _removeScene(Scene scene)
         {
             Debug.Assert(scene != null);
             Debug.Assert(_scenes.Contains(scene));
