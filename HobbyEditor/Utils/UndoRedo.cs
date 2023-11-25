@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace HobbyEditor.Utils
 {
-    interface IUndoRedo
+    public interface IUndoRedo
     {
         string Name { get; }
         void Undo();
@@ -46,7 +46,7 @@ namespace HobbyEditor.Utils
         }
     }   
 
-    class UndoRedo
+    public class UndoRedo
     {
         private readonly ObservableCollection<IUndoRedo> _redoList = new ObservableCollection<IUndoRedo>();
         private readonly ObservableCollection<IUndoRedo> _undoList = new ObservableCollection<IUndoRedo>();
