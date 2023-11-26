@@ -26,6 +26,9 @@ namespace HobbyEditor.Editors
 
         private void _onGameEntitiesListBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+           if (((ListBox)sender).SelectedItems.Count == 0)
+                return;
+
             var entity = ((ListBox)sender).SelectedItems[0];
             GameEntityView.Instance.DataContext = entity;
         }
