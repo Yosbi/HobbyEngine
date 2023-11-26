@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using HobbyEditor.GameProject;
+using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace HobbyEditor.Editors
 {
@@ -23,6 +13,16 @@ namespace HobbyEditor.Editors
         public WorldEditorView()
         {
             InitializeComponent();
+            Loaded += _onWorldEditorViewLoaded;
+        }
+
+        private void _onWorldEditorViewLoaded(object sender, RoutedEventArgs e)
+        {
+            Loaded -= _onWorldEditorViewLoaded;
+            Focus();
+
+            // In order to not loose focus when some ui objects change
+            ((INotifyCollectionChanged)Project.UndoRedo.UndoList).CollectionChanged += (s, e) => Focus();
         }
     }
 }

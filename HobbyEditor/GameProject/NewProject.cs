@@ -1,6 +1,5 @@
 ﻿using HobbyEditor.Utils;
 using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
