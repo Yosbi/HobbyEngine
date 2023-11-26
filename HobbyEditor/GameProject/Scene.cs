@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using HobbyEditor.Common;
+using HobbyEditor.Components;
+using HobbyEditor.Utils;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace HobbyEditor.GameProject
 {
@@ -43,12 +43,71 @@ namespace HobbyEditor.GameProject
             }
         }
 
+        [DataMember(Name = nameof(GameEntities))]
+        private readonly ObservableCollection<GameEntity> _gameEntities = new ObservableCollection<GameEntity>();
+        public ReadOnlyObservableCollection<GameEntity> GameEntities { get; private set; }
+
+        public ICommand AddGameEntityCommand { get; private set; }
+        public ICommand RemoveGameEntityCommand { get; private set; }
+
         public Scene(string name, Project project)
         {
             Debug.Assert(project != null);
             _name = name;
             Name = name;
             Project = project;
+            _onDeserialized(new StreamingContext());
+        }
+
+        [OnDeserialized]
+        private void _onDeserialized(StreamingContext context)
+        {
+            if (_gameEntities != null)
+            {
+                GameEntities = new ReadOnlyObservableCollection<GameEntity>(_gameEntities);
+                OnPropertyChanged(nameof(GameEntities));
+            }
+
+            AddGameEntityCommand = new RelayCommand<GameEntity>(x =>
+            {
+                _addGameEntity(x);
+                var entityIndex = _gameEntities.Count - 1;
+
+                Project.UndoRedo.Add(new UndoRedoAction(
+                    $"Add {x.Name} to {Name}",
+                    () => _removeGameEntity(x),
+                    () => _gameEntities.Insert(entityIndex, x)
+                ));
+
+
+            });
+
+            RemoveGameEntityCommand = new RelayCommand<GameEntity>(x =>
+            {
+                var entityToRemoveIndex = _gameEntities.IndexOf(x);
+                _removeGameEntity(x);
+                        
+                Project.UndoRedo.Add(new UndoRedoAction(
+                    $"Remove {x.Name} from {Name}",
+                    () => _gameEntities.Insert(entityToRemoveIndex, x),
+                    () => _removeGameEntity(x)
+                ));
+            });
+        }
+
+        private void _addGameEntity(GameEntity gameEntity)
+        {
+            Debug.Assert(gameEntity != null);  
+            Debug.Assert(!_gameEntities.Contains(gameEntity));
+
+            _gameEntities.Add(gameEntity);
+        }
+
+        private void _removeGameEntity(GameEntity gameEntity)
+        {
+            Debug.Assert(gameEntity != null);
+            Debug.Assert(_gameEntities.Contains(gameEntity));
+            _gameEntities.Remove(gameEntity);
         }
     }
 }

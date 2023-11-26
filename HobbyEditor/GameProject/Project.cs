@@ -1,14 +1,9 @@
 ﻿using HobbyEditor.Common;
 using HobbyEditor.Utils;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -26,7 +21,7 @@ namespace HobbyEditor.GameProject
         [DataMember]
         public string Path { get; private set; }    
 
-        public string FullPath => System.IO.Path.Combine(Path, Name + Extension);
+        public string FullPath => System.IO.Path.Combine(Path, Name, Name + Extension);
 
         [DataMember(Name = "Scenes")]
         private ObservableCollection<Scene> _scenes = new ObservableCollection<Scene>();
@@ -53,6 +48,8 @@ namespace HobbyEditor.GameProject
         public ICommand UndoCommand { get; private set; }
 
         public ICommand RedoCommand { get; private set; }
+
+        public ICommand SaveCommand { get; private set; }
 
         public ICommand AddSceneCommand { get; private set; }
 
@@ -106,6 +103,8 @@ namespace HobbyEditor.GameProject
 
             UndoCommand = new RelayCommand<object>(x => UndoRedo.Undo());
             RedoCommand = new RelayCommand<object>(x => UndoRedo.Redo());
+            SaveCommand = new RelayCommand<object>(x => Save(this));
+
         }
 
         public static Project Load(string file)

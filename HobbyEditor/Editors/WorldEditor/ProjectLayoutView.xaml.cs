@@ -1,19 +1,6 @@
-﻿using HobbyEditor.GameProject;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using HobbyEditor.Components;
+using HobbyEditor.GameProject;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 namespace HobbyEditor.Editors
 {
     /// <summary>
@@ -24,6 +11,23 @@ namespace HobbyEditor.Editors
         public ProjectLayoutView()
         {
             InitializeComponent();
+        }
+
+        private void _onAddGameEntityButtonClick(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var btn = (Button)sender;
+            var vm = (Scene)btn.DataContext;
+            vm.AddGameEntityCommand.Execute(
+                new GameEntity(vm)
+                { 
+                    Name = "Empty Game Entity"
+                });
+        }
+
+        private void _onGameEntitiesListBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var entity = ((ListBox)sender).SelectedItems[0];
+            GameEntityView.Instance.DataContext = entity;
         }
     }
 }
