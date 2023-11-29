@@ -116,11 +116,12 @@ namespace HobbyEditor.GameProject
         public static void Save(Project project)
         {
             Serializer.ToFile<Project>(project, project.FullPath);
+            Logger.Log(MessageType.Info, $"Project saved to {project.FullPath}");
         }
 
         public void Unload()
         {
-           // TODO
+           UndoRedo.Reset();
         }
 
         private void _addScene(string sceneName)
