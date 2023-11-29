@@ -21,6 +21,14 @@ namespace HobbyEditor.Utils
             Name = name;
         }
 
+        public UndoRedoAction(string name, string property, object instance, object undoValue, object redoValue)
+        {
+            Name = name;
+
+            _undoAction = () => instance.GetType().GetProperty(property).SetValue(instance, undoValue);
+            _redoAction = () => instance.GetType().GetProperty(property).SetValue(instance, redoValue);
+        }
+
         public UndoRedoAction(string name, Action undo, Action redo)
         {
             Name = name;
@@ -48,6 +56,8 @@ namespace HobbyEditor.Utils
         public ReadOnlyObservableCollection<IUndoRedo> RedoList { get; private set; }
         public ReadOnlyObservableCollection<IUndoRedo> UndoList { get; private set; }
 
+        private bool _enableAdd = true;
+
         public UndoRedo()
         {
             RedoList = new ReadOnlyObservableCollection<IUndoRedo>(_redoList);
@@ -66,7 +76,9 @@ namespace HobbyEditor.Utils
 
             var cmd = _undoList.Last();
             _undoList.RemoveAt(_undoList.Count - 1);
+            _enableAdd = false;
             cmd.Undo();
+            _enableAdd = true;
             _redoList.Insert(0, cmd);
         }
 
@@ -76,12 +88,16 @@ namespace HobbyEditor.Utils
 
             var cmd = _redoList.First();
             _redoList.RemoveAt(0);
+            _enableAdd = false;
             cmd.Redo();
+            _enableAdd = true;
             _undoList.Add(cmd);
         }
 
         public void Add(IUndoRedo cmd)
         {
+            if (!_enableAdd) return;
+
             _undoList.Add(cmd);
             _redoList.Clear();
         }
