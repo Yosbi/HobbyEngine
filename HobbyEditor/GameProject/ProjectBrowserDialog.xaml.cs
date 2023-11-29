@@ -10,9 +10,23 @@ namespace HobbyEditor.GameProject
         public ProjectBrowserDialog()
         {
             InitializeComponent();
+            Loaded += _onProjectBrowserDialogLoaded;
         }
 
-        private void OnToggleButton_Click(object sender, RoutedEventArgs e)
+        private void _onProjectBrowserDialogLoaded(object sender, RoutedEventArgs e)
+        {
+            Loaded -= _onProjectBrowserDialogLoaded;
+            if (!OpenProject.Projects.Any())
+            {
+                openProjectButton.IsEnabled = false;
+                openProjectView.Visibility = Visibility.Hidden;
+
+                _onToggleButtonClick(createProjectButton, new RoutedEventArgs());
+
+            }
+        }
+
+        private void _onToggleButtonClick(object sender, RoutedEventArgs e)
         {
             if (sender == openProjectButton)
             { 

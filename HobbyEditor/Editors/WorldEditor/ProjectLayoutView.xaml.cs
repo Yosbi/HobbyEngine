@@ -1,5 +1,6 @@
 ﻿using HobbyEditor.Components;
 using HobbyEditor.GameProject;
+using HobbyEditor.Utils;
 using System.Windows.Controls;
 namespace HobbyEditor.Editors
 {
@@ -26,8 +27,35 @@ namespace HobbyEditor.Editors
 
         private void _onGameEntitiesListBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var entity = ((ListBox)sender).SelectedItems[0];
-            GameEntityView.Instance.DataContext = entity;
+            GameEntityView.Instance.DataContext = null;
+            var listBox = (ListBox)sender;
+
+            if (e.AddedItems.Count > 0)
+            {
+                GameEntityView.Instance.DataContext = ((ListBox)sender).SelectedItems[0];
+            }
+
+            var newSelection = listBox.SelectedItems.Cast<GameEntity>().ToList();
+            var previousSelection = newSelection.Except(e.AddedItems.Cast<GameEntity>())
+                .Concat(e.RemovedItems.Cast<GameEntity>()).ToList();
+
+            Project.UndoRedo.Add(new UndoRedoAction(
+                "Selection Changed",
+                () => // Undo action
+                {
+                    listBox.UnselectAll();
+                    previousSelection.ForEach(item => 
+                        ((ListBoxItem)listBox.ItemContainerGenerator.ContainerFromItem(item))
+                        .IsSelected = true);
+                },
+                () => // Redo action
+                {
+                    listBox.UnselectAll();
+                    newSelection.ForEach(item =>
+                        ((ListBoxItem)listBox.ItemContainerGenerator.ContainerFromItem(item))
+                        .IsSelected = true);
+                }
+                ));
         }
     }
 }
