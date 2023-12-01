@@ -61,7 +61,8 @@ namespace HobbyEditor.GameProject
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
-                // TODO: Log the exception
+                Logger.Log(MessageType.Error, $"Failed to read project data");
+                throw;
             }
         }
 

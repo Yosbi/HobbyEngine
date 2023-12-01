@@ -18,7 +18,8 @@ namespace HobbyEditor.Utils
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
-                // TODO: Log the exception
+                Logger.Log(MessageType.Error,$"Failed to serialize {instance} to: {path}");
+                throw;
             }
         }
 
@@ -35,9 +36,8 @@ namespace HobbyEditor.Utils
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
-                // TODO: Log the exception
-
-                return default(T);
+                Logger.Log(MessageType.Error,"Failed to deserialize file: " + path);
+                throw;
             }
         }
     }
