@@ -9,7 +9,7 @@ using System.Windows.Input;
 namespace HobbyEditor.GameProject
 {
     [DataContract]
-    public class Scene : Common.ViewModelBase
+    class Scene : Common.ViewModelBase
     {
         private string _name;
 

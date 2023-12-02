@@ -1,10 +1,13 @@
-﻿using System.Diagnostics;
+﻿using HobbyEditor.Common;
+using System.Diagnostics;
 using System.Runtime.Serialization;
 
 namespace HobbyEditor.Components
 {
+    interface IMultiSelectComponent { }
+
     [DataContract]
-    public class Component : Common.ViewModelBase
+    abstract class Component : Common.ViewModelBase
     {
         [DataMember]
         public GameEntity Owner { get; private set; }
@@ -14,5 +17,9 @@ namespace HobbyEditor.Components
             Debug.Assert(owner != null);
             Owner = owner;
         }
+    }
+
+    abstract class MultiSelectComponent<T> : ViewModelBase, IMultiSelectComponent where T : Component
+    { 
     }
 }
