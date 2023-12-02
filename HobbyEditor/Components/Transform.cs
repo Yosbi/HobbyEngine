@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace HobbyEditor.Components
 {
     [DataContract]
-    internal class Transform : Component
+    class Transform : Component
     {
         private Vector3 _position;
         [DataMember]

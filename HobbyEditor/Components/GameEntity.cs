@@ -9,7 +9,7 @@ namespace HobbyEditor.Components
 {
     [DataContract]
     [KnownType(typeof(Transform))]
-    public class GameEntity : Common.ViewModelBase 
+    class GameEntity : Common.ViewModelBase 
     {
         private bool _isEnabled = true;
 
@@ -46,11 +46,6 @@ namespace HobbyEditor.Components
         private readonly ObservableCollection<Component> _components = new ObservableCollection<Component>();
         public ReadOnlyObservableCollection<Component> Components { get; private set; }
 
-
-        public ICommand RenameCommand { get; private set; }
-        public ICommand IsEnabledCommand { get; private set; }
-
-
         public GameEntity(Scene parentScene)
         {
             Debug.Assert(parentScene != null);
@@ -69,27 +64,126 @@ namespace HobbyEditor.Components
                 Components = new ReadOnlyObservableCollection<Component>(_components);
                 OnPropertyChanged(nameof(Components));
             }
-
-            RenameCommand = new Common.RelayCommand<string>(x =>
-            {
-                var oldName = _name;
-                Name = x;
-
-                Project.UndoRedo.Add(new UndoRedoAction($"Rename entity '{oldName}' to '{x}'", 
-                    nameof(Name), this, oldName, x));
-
-            }, x => x != _name);
-
-            IsEnabledCommand = new Common.RelayCommand<bool>(x =>
-            {
-                var oldValue = _isEnabled;
-                IsEnabled = x;
-
-                Project.UndoRedo.Add(new UndoRedoAction(x ? $"Enable '{Name}'" : $"Disable '{Name}'",
-                                       nameof(IsEnabled), this, oldValue, x));
-
-            });
         }
 
+    }
+
+    abstract class MultiSelectEntity: Common.ViewModelBase
+    {
+        // Enables updates to selected entities
+        private bool _enableUpdates = true; 
+
+        private bool? _isEnabled;
+        public bool? IsEnabled
+        {
+            get => _isEnabled;
+            set
+            {
+                if (_isEnabled == value) return;
+                _isEnabled = value;
+                OnPropertyChanged(nameof(IsEnabled));
+            }
+        }
+
+        private string? _name;
+        public string? Name
+        {
+            get => _name;
+            set
+            {
+                if (_name == value) return;
+                _name = value;
+                OnPropertyChanged(nameof(Name));
+            }
+        }
+
+        private readonly ObservableCollection<IMultiSelectComponent> _components = new ObservableCollection<IMultiSelectComponent>();
+        public ReadOnlyObservableCollection<IMultiSelectComponent> Components { get; private set; }
+    
+        public List<GameEntity> SelectedEntities { get; private set; }
+
+        public MultiSelectEntity(List<GameEntity> entities)
+        {
+            Debug.Assert(entities != null);
+            Components = new ReadOnlyObservableCollection<IMultiSelectComponent>(_components);
+            SelectedEntities = entities;
+
+            PropertyChanged += (sender, e) =>
+            { 
+                if (_enableUpdates)
+                    UpdateGameEntities(e.PropertyName);
+            };
+        }
+        public void Refresh()
+        {
+            _enableUpdates = false;
+            UpdateMultiSelectGameEntity();
+            _enableUpdates = true;  
+        }
+
+        protected virtual bool UpdateMultiSelectGameEntity()
+        {
+            IsEnabled = GetMixedValue(SelectedEntities, new Func<GameEntity, bool>(e => e.IsEnabled));
+            Name = GetMixedValue(SelectedEntities, new Func<GameEntity, string>(e => e.Name));
+
+            return true;
+        }
+
+        protected virtual bool UpdateGameEntities(string propertyName)
+        {
+            switch (propertyName)
+            {
+                case nameof(IsEnabled):
+                    SelectedEntities.ForEach(e => e.IsEnabled = IsEnabled.Value);
+                    return true;
+                case nameof(Name):
+                    SelectedEntities.ForEach(e => e.Name = Name);
+                    return true;
+            }   
+            return false;
+        }   
+
+        public static float? GetMixedValue(List<GameEntity> entities, Func<GameEntity, float> getValue)
+        {
+            var firstValue = getValue(entities.First());
+            for (int i = 1; i < entities.Count; i++)
+            {
+                if (!firstValue.IsTheSameAs(getValue(entities[i])))
+                    return null;
+            }
+            return firstValue;
+        }
+
+        public static bool? GetMixedValue(List<GameEntity> entities, Func<GameEntity, bool> getValue)
+        {
+            var firstValue = getValue(entities.First());
+            for (int i = 1; i < entities.Count; i++)
+            {
+                if (firstValue != getValue(entities[i]))
+                    return null;
+            }
+            return firstValue;
+        }
+
+        public static string? GetMixedValue(List<GameEntity> entities, Func<GameEntity, string> getValue)
+        {
+            var firstValue = getValue(entities.First());
+            for (int i = 1; i < entities.Count; i++)
+            {
+                if (firstValue != getValue(entities[i]))
+                    return null;
+            }
+            return firstValue;
+        }
+
+    }
+
+    class MultiSelectGameEntity : MultiSelectEntity
+    {
+       
+        public MultiSelectGameEntity(List<GameEntity> entities) : base(entities)
+        {
+            Refresh();
+        }
     }
 }

@@ -10,7 +10,7 @@ using System.Windows.Input;
 namespace HobbyEditor.GameProject
 {
     [DataContract(Name = "Game")]
-    public class Project : Common.ViewModelBase
+    class Project : Common.ViewModelBase
     {
 
         public static string Extension = ".hobby";
