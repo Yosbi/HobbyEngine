@@ -3,7 +3,7 @@
 
 namespace hobby {
 
-#define INIT_INFO(component ) namespace component { struct init_info; }
+#define INIT_INFO(component) namespace component { struct init_info; }
 	
 	INIT_INFO(transform);
 
@@ -12,7 +12,7 @@ namespace hobby {
 	namespace game_entity {
 
 		struct entity_info {
-			transform::init_info* transform{ nullptr };
+			transform::init_info* transform = nullptr;
 		};
 
 		entity_id create_game_entity(const entity_info& info);
