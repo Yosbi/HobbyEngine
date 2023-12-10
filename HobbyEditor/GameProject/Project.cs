@@ -2,7 +2,9 @@
 using HobbyEditor.Utils;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Reflection.Metadata;
 using System.Runtime.Serialization;
 using System.Windows;
 using System.Windows.Input;
@@ -10,7 +12,7 @@ using System.Windows.Input;
 namespace HobbyEditor.GameProject
 {
     [DataContract(Name = "Game")]
-    class Project : Common.ViewModelBase
+    class Project : ViewModelBase
     {
 
         public static string Extension = ".hobby";
@@ -24,13 +26,13 @@ namespace HobbyEditor.GameProject
         public string FullPath => System.IO.Path.Combine(Path, Name, Name + Extension);
 
         [DataMember(Name = "Scenes")]
-        private ObservableCollection<Scene> _scenes = new ObservableCollection<Scene>();
+        private ObservableCollection<Scene> _scenes = [];
         
         public ReadOnlyObservableCollection<Scene> Scenes { get; private set; }
 
-        private Scene _activeScene;
+        private Scene? _activeScene;
 
-        public Scene ActiveScene
+        public Scene? ActiveScene
         {
             get => _activeScene;
             set
@@ -63,6 +65,8 @@ namespace HobbyEditor.GameProject
             _onDeserialized(new StreamingContext());
         }
 
+
+        [MemberNotNull(["Scenes", "UndoCommand", "RedoCommand", "SaveCommand", "AddSceneCommand", "RemoveSceneCommand"])]
         [OnDeserialized]
         private void _onDeserialized(StreamingContext context)
         {
@@ -71,11 +75,11 @@ namespace HobbyEditor.GameProject
                 Scenes = new ReadOnlyObservableCollection<Scene>(_scenes);
                 OnPropertyChanged(nameof(Scenes));
             }
-            ActiveScene = Scenes.FirstOrDefault(s => s.IsActive);
+            ActiveScene = Scenes?.FirstOrDefault(s => s.IsActive);
 
             AddSceneCommand = new RelayCommand<object>(x =>
             {
-                _addScene($"Scene{(_scenes.Count + 1)}");
+                _addScene($"Scene{(_scenes!.Count + 1)}");
                 var newSceneAdded = _scenes.Last();
                 var newSceneAddedIndex = _scenes.Count - 1;
 
@@ -91,7 +95,7 @@ namespace HobbyEditor.GameProject
             RemoveSceneCommand = new RelayCommand<Scene>(x =>
             {
                 var sceneToRemove = x;
-                var sceneToRemoveIndex = _scenes.IndexOf(sceneToRemove);
+                var sceneToRemoveIndex = _scenes!.IndexOf(sceneToRemove);
                 _removeScene(sceneToRemove);
 
                 UndoRedo.Add(new UndoRedoAction(

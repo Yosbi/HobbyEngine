@@ -10,16 +10,17 @@ namespace HobbyEditor.Editors
     /// </summary>
     public partial class GameEntityView : UserControl
     {
-        public static GameEntityView Instance { get; private set; }
+        public static GameEntityView? Instance { get; private set; }
 
-        private Action _undoAction;
-        private string _propertyName;
+        private Action? _undoAction;
+        private string? _propertyName;
 
         public GameEntityView()
         {
             InitializeComponent();
             DataContext = null;
             Instance = this;
+
             DataContextChanged += (_, __) =>
             {
                 if (DataContext != null)

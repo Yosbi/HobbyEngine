@@ -51,8 +51,8 @@ namespace HobbyEditor.Editors
                 }
                 ));
 
-            MultiSelectGameEntity msEntity = null;
-            if ( newSelection.Any() )
+            MultiSelectGameEntity? msEntity = null;
+            if ( newSelection.Count > 0 )
             {
                 msEntity = new MultiSelectGameEntity(newSelection);
             }
