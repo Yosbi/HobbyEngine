@@ -16,17 +16,12 @@ namespace HobbyEditor.Utils
         private Action _undoAction;
         private Action _redoAction;
 
-        public UndoRedoAction(string name)
-        {
-            Name = name;
-        }
-
         public UndoRedoAction(string name, string property, object instance, object undoValue, object redoValue)
         {
             Name = name;
 
-            _undoAction = () => instance.GetType().GetProperty(property).SetValue(instance, undoValue);
-            _redoAction = () => instance.GetType().GetProperty(property).SetValue(instance, redoValue);
+            _undoAction = () => instance.GetType().GetProperty(property)?.SetValue(instance, undoValue);
+            _redoAction = () => instance.GetType().GetProperty(property)?.SetValue(instance, redoValue);
         }
 
         public UndoRedoAction(string name, Action undo, Action redo)

@@ -26,9 +26,9 @@ namespace HobbyEditor.GameProject
         public string FullPath => System.IO.Path.Combine(Path, Name, Name + Extension);
 
         [DataMember(Name = "Scenes")]
-        private ObservableCollection<Scene> _scenes = [];
+        private ObservableCollection<Scene> _scenes = new ObservableCollection<Scene>();
         
-        public ReadOnlyObservableCollection<Scene> Scenes { get; private set; }
+        public ReadOnlyObservableCollection<Scene>? Scenes { get; private set; }
 
         private Scene? _activeScene;
 
@@ -66,7 +66,7 @@ namespace HobbyEditor.GameProject
         }
 
 
-        [MemberNotNull(["Scenes", "UndoCommand", "RedoCommand", "SaveCommand", "AddSceneCommand", "RemoveSceneCommand"])]
+        [MemberNotNull(["UndoCommand", "RedoCommand", "SaveCommand", "AddSceneCommand", "RemoveSceneCommand"])]
         [OnDeserialized]
         private void _onDeserialized(StreamingContext context)
         {
@@ -75,6 +75,7 @@ namespace HobbyEditor.GameProject
                 Scenes = new ReadOnlyObservableCollection<Scene>(_scenes);
                 OnPropertyChanged(nameof(Scenes));
             }
+
             ActiveScene = Scenes?.FirstOrDefault(s => s.IsActive);
 
             AddSceneCommand = new RelayCommand<object>(x =>

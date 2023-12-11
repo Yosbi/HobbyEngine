@@ -27,7 +27,7 @@ namespace HobbyEditor.Editors
 
         private void _onGameEntitiesListBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            GameEntityView.Instance.DataContext = null;
+            GameEntityView.Instance!.DataContext = null;
             var listBox = (ListBox)sender;
             var newSelection = listBox.SelectedItems.Cast<GameEntity>().ToList();
             var previousSelection = newSelection.Except(e.AddedItems.Cast<GameEntity>())

@@ -1,6 +1,8 @@
 ﻿using HobbyEditor.GameProject;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Interop;
+using System.Windows.Media;
 
 namespace HobbyEditor
 {
@@ -9,11 +11,20 @@ namespace HobbyEditor
     /// </summary>
     public partial class MainWindow : Window
     {
+        private const bool ForceSoftwareRendering = false;
+
         public MainWindow()
         {
             InitializeComponent();
             Loaded += OnMainWindowLoaded;
             Closing += OnMainWindowClosing;
+            
+            if (ForceSoftwareRendering)
+            {
+#pragma warning disable CS0162 // Unreachable code detected
+                RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
+#pragma warning restore CS0162 // Unreachable code detected
+            }
         }
 
         private void OnMainWindowClosing(object? sender, CancelEventArgs e)

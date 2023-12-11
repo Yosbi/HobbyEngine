@@ -26,7 +26,6 @@ namespace HobbyEditor.Components
         }
 
         private string _name;
-
         [DataMember]
         public string Name
         {
@@ -51,7 +50,11 @@ namespace HobbyEditor.Components
             Debug.Assert(parentScene != null);
             ParentScene = parentScene;
 
+            _name = string.Empty;
+
             _components.Add(new Transform(this));
+            
+            Components = new ReadOnlyObservableCollection<Component>(_components);
 
             _onDeserialized(new StreamingContext());
         }
@@ -110,7 +113,7 @@ namespace HobbyEditor.Components
 
             PropertyChanged += (sender, e) =>
             { 
-                if (_enableUpdates)
+                if (_enableUpdates && e.PropertyName != null)
                     UpdateGameEntities(e.PropertyName);
             };
         }
@@ -134,9 +137,17 @@ namespace HobbyEditor.Components
             switch (propertyName)
             {
                 case nameof(IsEnabled):
+
+                    // Suppresing warning
+                    if (IsEnabled == null) return false;
+
                     SelectedEntities.ForEach(e => e.IsEnabled = IsEnabled.Value);
                     return true;
                 case nameof(Name):
+
+                    // Suppresing warning
+                    if (Name == null) return false;
+
                     SelectedEntities.ForEach(e => e.Name = Name);
                     return true;
             }   
