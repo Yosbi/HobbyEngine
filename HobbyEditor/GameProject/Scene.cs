@@ -3,6 +3,7 @@ using HobbyEditor.Components;
 using HobbyEditor.Utils;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 using System.Windows.Input;
 
@@ -45,7 +46,7 @@ namespace HobbyEditor.GameProject
 
         [DataMember(Name = nameof(GameEntities))]
         private readonly ObservableCollection<GameEntity> _gameEntities = new ObservableCollection<GameEntity>();
-        public ReadOnlyObservableCollection<GameEntity> GameEntities { get; private set; }
+        public ReadOnlyObservableCollection<GameEntity>? GameEntities { get; private set; }
 
         public ICommand AddGameEntityCommand { get; private set; }
         public ICommand RemoveGameEntityCommand { get; private set; }
@@ -59,6 +60,7 @@ namespace HobbyEditor.GameProject
             _onDeserialized(new StreamingContext());
         }
 
+        [MemberNotNull([ "AddGameEntityCommand", "RemoveGameEntityCommand"])]
         [OnDeserialized]
         private void _onDeserialized(StreamingContext context)
         {
@@ -71,7 +73,7 @@ namespace HobbyEditor.GameProject
             AddGameEntityCommand = new RelayCommand<GameEntity>(x =>
             {
                 _addGameEntity(x);
-                var entityIndex = _gameEntities.Count - 1;
+                var entityIndex = _gameEntities!.Count - 1;
 
                 Project.UndoRedo.Add(new UndoRedoAction(
                     $"Add {x.Name} to {Name}",
@@ -84,7 +86,7 @@ namespace HobbyEditor.GameProject
 
             RemoveGameEntityCommand = new RelayCommand<GameEntity>(x =>
             {
-                var entityToRemoveIndex = _gameEntities.IndexOf(x);
+                var entityToRemoveIndex = _gameEntities!.IndexOf(x);
                 _removeGameEntity(x);
                         
                 Project.UndoRedo.Add(new UndoRedoAction(

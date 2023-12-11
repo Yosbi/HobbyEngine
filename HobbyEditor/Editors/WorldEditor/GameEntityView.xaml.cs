@@ -10,16 +10,17 @@ namespace HobbyEditor.Editors
     /// </summary>
     public partial class GameEntityView : UserControl
     {
-        public static GameEntityView Instance { get; private set; }
+        public static GameEntityView? Instance { get; private set; }
 
-        private Action _undoAction;
-        private string _propertyName;
+        private Action? _undoAction;
+        private string? _propertyName;
 
         public GameEntityView()
         {
             InitializeComponent();
             DataContext = null;
             Instance = this;
+
             DataContextChanged += (_, __) =>
             {
                 if (DataContext != null)
@@ -30,7 +31,7 @@ namespace HobbyEditor.Editors
             };
         }
 
-        private Action GetRenameAction()
+        private Action _getRenameAction()
         {
             var vm = (MultiSelectEntity)DataContext;
             var selection = vm.SelectedEntities.Select(entity => (entity, entity.Name)).ToList();
@@ -41,7 +42,7 @@ namespace HobbyEditor.Editors
             });
         }
 
-        private Action GetIsEnabledAction()
+        private Action _getIsEnabledAction()
         {
             var vm = (MultiSelectEntity)DataContext;
             var selection = vm.SelectedEntities.Select(entity => (entity, entity.IsEnabled)).ToList();
@@ -54,7 +55,7 @@ namespace HobbyEditor.Editors
 
         private void _onNameTextBoxGotKeyboardFocus(object sender, System.Windows.Input.KeyboardFocusChangedEventArgs e)
         {
-            _undoAction = GetRenameAction();
+            _undoAction = _getRenameAction();
 
         }
 
@@ -65,7 +66,7 @@ namespace HobbyEditor.Editors
                 Project.UndoRedo.Add(new UndoRedoAction(
                                        "Rename game entity",
                                         _undoAction,
-                                        GetRenameAction()
+                                        _getRenameAction()
                                     ));
                 _propertyName = null;
             }
@@ -74,10 +75,10 @@ namespace HobbyEditor.Editors
 
         private void _onIsEnabledCheckbox(object sender, System.Windows.RoutedEventArgs e)
         {
-            var undoAction = GetIsEnabledAction();  
+            var undoAction = _getIsEnabledAction();  
             var vm = (MultiSelectEntity)DataContext;
             vm.IsEnabled = ((CheckBox)sender).IsChecked == true;
-            var redoAction = GetIsEnabledAction();
+            var redoAction = _getIsEnabledAction();
             Project.UndoRedo.Add(new UndoRedoAction(
                                     vm.IsEnabled == true? "Enable game entity":"Disable game entity",
                                     undoAction,

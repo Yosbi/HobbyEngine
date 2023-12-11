@@ -10,26 +10,26 @@ namespace HobbyEditor.GameProject
     public class ProjectData
     {
         [DataMember]
-        public string ProjectName { get; set; }
+        public required string ProjectName { get; set; }
 
         [DataMember]
-        public string ProjectPath { get; set; }
+        public required string ProjectPath { get; set; }
 
         [DataMember]
-        public DateTime Date { get; set; }
+        public required DateTime Date { get; set; }
     
         public string FullPath { get => $@"{ProjectPath}{ProjectName}{Project.Extension}"; }
     
-        public byte[] Icon { get; set; }
+        public required byte[] Icon { get; set; }
 
-        public byte[] Screenshot { get; set; }
+        public required byte[] Screenshot { get; set; }
     }
 
     [DataContract]
     public class ProjectDataList
     {
         [DataMember]
-        public List<ProjectData> Projects { get; set; }
+        public required List<ProjectData> Projects { get; set; }
     }
 
     class OpenProject

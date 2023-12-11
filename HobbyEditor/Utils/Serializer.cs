@@ -30,7 +30,7 @@ namespace HobbyEditor.Utils
                 using var fs = new FileStream(path, FileMode.Open);
                 var serializer = new DataContractSerializer(typeof(T));
 
-                T instance = (T)serializer.ReadObject(fs);
+                T instance = (T)serializer.ReadObject(fs)!;
                 return instance;
             }
             catch (Exception ex)

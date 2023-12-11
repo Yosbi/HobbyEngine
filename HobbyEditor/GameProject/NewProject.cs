@@ -10,23 +10,23 @@ namespace HobbyEditor.GameProject
     public class ProjectTemplate
     {
         [DataMember]
-        public string ProjectType { get; set; }
+        public required string ProjectType { get; set; }
 
         [DataMember]
-        public string ProjectFile { get; set; }
+        public required string ProjectFile { get; set; }
 
         [DataMember]
-        public List<string> Folders { get; set; }
+        public required List<string> Folders { get; set; }
 
-        public byte[] Icon { get; set; }
+        public required byte[] Icon { get; set; }
 
-        public byte[] Screenshot { get; set; }
+        public required byte[] Screenshot { get; set; }
 
-        public string IconPath { get; set; }
+        public required string IconPath { get; set; }
 
-        public string ScreenshotPath { get; set; }
+        public required string ScreenshotPath { get; set; }
 
-        public string ProjectPath { get; set; }
+        public required string ProjectPath { get; set; }
     }
 
     class NewProject : Common.ViewModelBase

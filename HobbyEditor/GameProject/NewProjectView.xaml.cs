@@ -25,7 +25,10 @@ namespace HobbyEditor.GameProject
                     new ProjectData()
                     {
                         ProjectName = vm.ProjectName,
-                        ProjectPath = projectPath
+                        ProjectPath = projectPath,
+                        Date = DateTime.Now,
+                        Icon = ((ProjectTemplate)templateListBox.SelectedItem).Icon,
+                        Screenshot = ((ProjectTemplate)templateListBox.SelectedItem).Screenshot
                     }
                 );
                 var window = Window.GetWindow(this);
