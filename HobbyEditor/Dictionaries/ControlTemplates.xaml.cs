@@ -7,14 +7,14 @@ namespace HobbyEditor.Dictionaries
 {
     public partial class ControlTemplates : ResourceDictionary
     {
-        private void _onTextBoxKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private void _onTextBoxKeyDown(object sender, KeyEventArgs e)
         {
-            var textBox = sender as TextBox;
+            var textBox = (TextBox)sender;
             var exp = textBox.GetBindingExpression(TextBox.TextProperty);
 
             if (exp == null) return;
 
-            if (e.Key == System.Windows.Input.Key.Enter)
+            if (e.Key == Key.Enter)
             {
                if (textBox.Tag is ICommand command && command.CanExecute(textBox.Text))
                 {
@@ -28,13 +28,11 @@ namespace HobbyEditor.Dictionaries
                Keyboard.ClearFocus();
                 e.Handled = true;
             }
-            else if (e.Key == System.Windows.Input.Key.Escape)
+            else if (e.Key == Key.Escape)
             {
                 exp.UpdateTarget();
                 Keyboard.ClearFocus();
             }
-
-           
         }
     }
 }
