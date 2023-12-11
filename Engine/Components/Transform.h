@@ -2,7 +2,6 @@
 #include "ComponentsCommon.h"
 
 namespace hobby::transform {
-	DEFINE_TYPED_ID(transform_id);
 
 	struct init_info {
 		f32 position[3] = {};

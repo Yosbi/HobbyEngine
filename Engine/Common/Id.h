@@ -12,27 +12,28 @@ namespace hobby::id {
 	} //namespace internal
 
 	constexpr id_type invalid_id = id_type(-1);
+	constexpr u32 min_deleted_elements = 1024;
 
 	using generation_type = std::conditional_t< internal::generation_bits <= 16, 
 		std::conditional_t<internal::generation_bits <= 8, u8, u16>, u32> ;
 	static_assert(sizeof(generation_type) * 8 >= internal::generation_bits, "generation_type is too small");
 	static_assert(sizeof(id_type) - sizeof(generation_type) > 0, "id_type is too small");
 
-	inline bool is_valid(id_type id) {
+	constexpr bool is_valid(id_type id) {
 		return id != invalid_id;
 	}
 
-	inline id_type index(id_type id) {
+	constexpr id_type index(id_type id) {
 		id_type index = id & internal::index_mask;
 		assert(index != internal::index_mask);
 		return index;
 	}
 
-	inline generation_type generation(id_type id) {
+	constexpr generation_type generation(id_type id) {
 		return (id >> internal::index_bits) & internal::generation_mask;
 	}
 
-	inline id_type new_generation(id_type id) {
+	constexpr id_type new_generation(id_type id) {
 		const id_type generation = id::generation(id) + id_type(1);
 		assert(generation <= (((u64)1 << internal::generation_bits) -1 ));
 		return index(id) | (generation << internal::index_bits);
