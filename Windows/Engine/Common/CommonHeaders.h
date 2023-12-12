@@ -7,6 +7,11 @@
 #include <assert.h>
 #include <typeinfo>
 
+#if defined(_WIN64)
+#include <DirectXMath.h>
+#endif
+
 // common headers
-#include "PrimitiveTypes.h"
 #include "..\Utils\Utils.h"
+#include "..\Utils\MathTypes.h"
+#include "PrimitiveTypes.h"
