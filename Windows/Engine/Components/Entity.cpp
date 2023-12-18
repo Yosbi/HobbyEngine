@@ -35,7 +35,7 @@ namespace hobby::game_entity
 			generations.push_back(0);
 
 			// Resize components
-			// Note: we don't call resize(), so the numbre of memory allocations stays low
+			// Note: we don't call resize(), so the number of memory allocations stays low
 			transforms.emplace_back();
 		}
 
