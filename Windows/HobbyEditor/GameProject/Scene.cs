@@ -70,6 +70,12 @@ namespace HobbyEditor.GameProject
                 OnPropertyChanged(nameof(GameEntities));
             }
 
+            // Set the entities active state to the scene's active state
+            foreach (var entity in _gameEntities!)
+            {
+                entity.IsActive = IsActive;
+            }
+
             AddGameEntityCommand = new RelayCommand<GameEntity>(x =>
             {
                 _addGameEntity(x);
@@ -78,7 +84,7 @@ namespace HobbyEditor.GameProject
                 Project.UndoRedo.Add(new UndoRedoAction(
                     $"Add {x.Name} to {Name}",
                     () => _removeGameEntity(x),
-                    () => _gameEntities.Insert(entityIndex, x)
+                    () => _addGameEntity(x, entityIndex)
                 ));
 
 
@@ -91,24 +97,33 @@ namespace HobbyEditor.GameProject
                         
                 Project.UndoRedo.Add(new UndoRedoAction(
                     $"Remove {x.Name} from {Name}",
-                    () => _gameEntities.Insert(entityToRemoveIndex, x),
+                    () => _addGameEntity(x, entityToRemoveIndex),
                     () => _removeGameEntity(x)
                 ));
             });
         }
 
-        private void _addGameEntity(GameEntity gameEntity)
+        private void _addGameEntity(GameEntity gameEntity, int index = -1)
         {
-            Debug.Assert(gameEntity != null);  
+            Debug.Assert(gameEntity != null);
             Debug.Assert(!_gameEntities.Contains(gameEntity));
 
-            _gameEntities.Add(gameEntity);
+            gameEntity.IsActive = IsActive;
+            if (index == -1) // if it is a new entity
+            {
+                _gameEntities.Add(gameEntity);
+            }
+            else
+            {
+                _gameEntities.Insert(index, gameEntity);
+            }
         }
 
         private void _removeGameEntity(GameEntity gameEntity)
         {
             Debug.Assert(gameEntity != null);
             Debug.Assert(_gameEntities.Contains(gameEntity));
+            gameEntity.IsActive = false;
             _gameEntities.Remove(gameEntity);
         }
     }
