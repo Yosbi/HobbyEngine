@@ -7,8 +7,8 @@ namespace hobby::id {
 	namespace internal {
 		constexpr u32 generation_bits = 10;
 		constexpr u32 index_bits = sizeof(id_type) * 8 - generation_bits;
-		constexpr id_type index_mask = (id_type{1} << index_bits) - 1 ;
-		constexpr id_type generation_mask = (id_type{1} << generation_bits) - 1 ;
+		constexpr id_type index_mask = (id_type(1) << index_bits) - 1 ;
+		constexpr id_type generation_mask = (id_type(1) << generation_bits) - 1 ;
 	} //namespace internal
 
 	constexpr id_type invalid_id = id_type(-1);
@@ -35,7 +35,7 @@ namespace hobby::id {
 
 	constexpr id_type new_generation(id_type id) {
 		const id_type generation = id::generation(id) + id_type(1);
-		assert(generation <= (((u64)1 << internal::generation_bits) -1 ));
+		assert(generation <= (((u64)1 << internal::generation_bits) - 1 ));
 		return index(id) | (generation << internal::index_bits);
 	}
 

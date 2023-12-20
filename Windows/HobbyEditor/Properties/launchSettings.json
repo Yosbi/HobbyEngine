@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "HobbyEditor": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}
